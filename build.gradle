@@ -1,0 +1,48 @@
+plugins {
+  id 'groovy'
+  id 'com.github.johnrengelman.shadow' version '1.2.2'
+}
+
+repositories {
+    maven {
+        url "https://oss.jfrog.org/artifactory/repo"
+    }
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.4.4'
+    compile 'io.prometheus:simpleclient:0.0.10'
+    compile 'io.prometheus:simpleclient_servlet:0.0.10'
+    compile 'org.eclipse.jetty:jetty-servlet:7.3.1.v20110307'
+
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+    testCompile 'co.freeside:betamax:1.1.2'
+}
+
+defaultTasks 'clean', 'shadowJar'
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'whamondg.ServiceMonitor'
+    }
+}
+
+def getVersionName = {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags'
+        standardOutput = stdout
+    }
+    stdout.toString().trim()
+}
+
+group = 'whamondg'
+version = getVersionName()
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+        events "passed", "skipped", "failed"
+    }
+}
+
