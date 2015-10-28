@@ -1,0 +1,21 @@
+machine:
+  services:
+    - docker
+
+checkout:
+  post:
+    - git describe --tag
+    - ./gradlew
+
+test:
+  override:
+    - docker run -d -p 5050:5050 whamondg/service-monitor:`cat VERSION`; sleep 10
+    - curl --retry 10 --retry-delay 5 -v http://localhost:5050
+
+deployment:
+  hub:
+    branch: master
+    commands:
+      - docker login -u whamondg -p $BINTRAY_KEY -e $DOCKER_EMAIL whamondg-docker-registry.bintray.io
+      - docker tag whamondg/service-monitor:`cat VERSION` whamondg-docker-registry.bintray.io/service-monitor:`cat VERSION`
+      - docker push whamondg-docker-registry.bintray.io/service-monitor:`cat VERSION`
