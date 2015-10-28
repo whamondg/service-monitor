@@ -9,16 +9,18 @@ import org.eclipse.jetty.servlet.ServletHolder
 import org.eclipse.jetty.servlet.ServletContextHandler
 
 class ServiceChecker{
-    def latency = Summary.build()
-                      .name("request_latency_seconds")
-                      .help("Request latency in seconds.")
-                      .register()
-    def failures = Counter.build()
-                       .name("request_failures_total")
-                       .help("Request failures.")
-                       .register()
 
     void processGetRequest( address ) {
+        def latency = Summary.build()
+                          .name("${address}_request_latency_seconds")
+                          .help("Request latency in seconds for ${address}.")
+                          .register()
+
+        def failures = Counter.build()
+                           .name("${address}_request_failures_total")
+                           .help("Request failures for ${address}.")
+                           .register()
+
         def timer = latency.startTimer()
         println "Requesting $address"
         try {
