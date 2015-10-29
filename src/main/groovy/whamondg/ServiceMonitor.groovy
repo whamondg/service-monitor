@@ -10,14 +10,14 @@ import org.eclipse.jetty.servlet.ServletContextHandler
 
 class ServiceChecker{
 
-    void processGetRequest( address ) {
+    void processGetRequest( name, address ) {
         def latency = Summary.build()
-                          .name("${address}_request_latency_seconds")
+                          .name("${name}_request_latency_seconds")
                           .help("Request latency in seconds for ${address}.")
                           .register()
 
         def failures = Counter.build()
-                           .name("${address}_request_failures_total")
+                           .name("${name}_request_failures_total")
                            .help("Request failures for ${address}.")
                            .register()
 
@@ -32,12 +32,12 @@ class ServiceChecker{
         }
     }
 
-    void check( address ) {
+    void check( name, address ) {
         new Thread( [
             run : {
                 int serviceTestFrequency = 3000
                 while (true) {
-                    processGetRequest( address )
+                    processGetRequest( name, address )
                     sleep( serviceTestFrequency )
                 }
             }
@@ -47,13 +47,13 @@ class ServiceChecker{
 
 class Monitor {
     void start() {
-        def server = new Server(1234)
+        def server = new Server(5060)
         def context = new ServletContextHandler( contextPath : '/' )
         context.addServlet( new ServletHolder( new MetricsServlet() ), '/metrics' )
         server.handler = context
 
-        new ServiceChecker().check('http://192.168.99.100:5050/')
-        new ServiceChecker().check('http://192.168.99.100:5051/')
+        new ServiceChecker().check( 'service5050', 'http://192.168.99.100:5050/')
+        new ServiceChecker().check( 'service5051', 'http://192.168.99.100:5051/')
 
         server.start()
         server.join()

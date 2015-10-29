@@ -81,7 +81,7 @@ task buildDocker(type: Docker) {
     applicationName = project.name
     runCommand "mkdir /${project.name}"
     workingDir project.name
-    addFile( "build/libs/${project.name }-${version}-all.jar", "${project.name }/${project.name }.jar")
+    addFile( "build/libs/${project.name }-${version}-all.jar", "${project.name}/${project.name}.jar")
     exposePort 5050
-    defaultCommand(["java", "-jar","${project.name }/${project.name }.jar"])
+    defaultCommand(["java", "-jar","${project.name}/${project.name}.jar"])
 }
