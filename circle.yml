@@ -9,8 +9,8 @@ checkout:
 
 test:
   override:
-    - docker run -d -p 5050:5050 whamondg/service-monitor:`cat VERSION`; sleep 10
-    - curl --retry 10 --retry-delay 5 -v http://localhost:5050
+    - docker run -d -p 5060:5060 whamondg/service-monitor:`cat VERSION`; sleep 10
+    - curl --retry 10 --retry-delay 5 -v http://localhost:5060
 
 deployment:
   hub:
