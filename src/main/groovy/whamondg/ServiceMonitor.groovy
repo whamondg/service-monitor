@@ -13,12 +13,12 @@ class ServiceChecker{
     void processGetRequest( name, address ) {
         def latency = Summary.build()
                           .name("${name}_request_latency_seconds")
-                          .help("Request latency in seconds for ${address}.")
+                          .help("Request latency in seconds for ${name}.")
                           .register()
 
         def failures = Counter.build()
                            .name("${name}_request_failures_total")
-                           .help("Request failures for ${address}.")
+                           .help("Request failures for ${name}.")
                            .register()
 
         def timer = latency.startTimer()
