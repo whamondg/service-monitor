@@ -10,7 +10,21 @@ import org.eclipse.jetty.servlet.ServletContextHandler
 
 class ServiceChecker{
 
-    void processGetRequest( name, address ) {
+    void processGetRequest( latency, failures, address ) {
+        def timer = latency.startTimer()
+        println "Requesting $address"
+        try {
+            println address.toURL().text
+        } catch ( Exception ignore ) {
+            failures.inc();
+        } finally {
+            def t = timer.observeDuration()
+            println "Timer time: $t"
+        }
+    }
+
+    void check( name, address ) {
+
         def latency = Summary.build()
                           .name("${name}_request_latency_seconds")
                           .help("Request latency in seconds for ${name}")
@@ -21,23 +35,11 @@ class ServiceChecker{
                            .help("Request failures for ${name}")
                            .register()
 
-        def timer = latency.startTimer()
-        println "Requesting $address"
-        try {
-            println address.toURL().text
-        } catch ( Exception ignore ) {
-            failures.inc();
-        } finally {
-            timer.observeDuration();
-        }
-    }
-
-    void check( name, address ) {
         new Thread( [
             run : {
                 int serviceTestFrequency = 3000
                 while (true) {
-                    processGetRequest( name, address )
+                    processGetRequest( latency, failures, address )
                     sleep( serviceTestFrequency )
                 }
             }
