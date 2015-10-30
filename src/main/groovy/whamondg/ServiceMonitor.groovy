@@ -1,7 +1,7 @@
 package whamondg
 
 import io.prometheus.client.Counter
-import io.prometheus.client.Summary
+import io.prometheus.client.Histogram
 import io.prometheus.client.exporter.MetricsServlet
 
 import org.eclipse.jetty.server.Server
@@ -25,12 +25,12 @@ class ServiceChecker{
 
     void check( name, address ) {
 
-        def latency = Summary.build()
+        def latency = Histogram.build()
                           .name("${name}_request_latency_seconds")
                           .help("Request latency in seconds for ${name}")
                           .register()
 
-        def failures = Counter.build()
+        def failures = Histogram.build()
                            .name("${name}_request_failures_total")
                            .help("Request failures for ${name}")
                            .register()
